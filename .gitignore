@@ -1,0 +1,14 @@
+# ===== Hugo 构建产物（不用提交） =====
+public/
+resources/_gen/
+.hugo_build.lock
+
+# ===== 一键推送脚本 =====
+*.bat
+
+# ===== 系统/编辑器文件 =====
+.DS_Store
+Thumbs.db
+*.log
+.idea/
+.vscode/
