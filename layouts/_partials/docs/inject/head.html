@@ -1,0 +1,125 @@
+<style>
+  /* 0.全局配色变量（改这里 = 全站换色） */
+:root{
+  --green: #2f7a5c ; --green-dark: #1d5444 ; --amber: #b3541e ;
+  --ink: #2b2f36 ; --line: #e3e8ec ; --bq-bg: #f1f7f3 ; --toc-bg: #f7f9f8 ;
+}
+
+  /* 全局基础（盒模型 / 页面字体 / 背景 */
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{
+  margin:0; padding:0;
+  font-family:"PingFang SC","Hiragino Sans GB","Microsoft YaHei","Noto Sans SC","Source Han Sans SC",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+  color:var(--ink); line-height:1.9;
+  background:linear-gradient(180deg, #eef2ef 0%, #f6f7f9 0%);
+  min-height:100vh;
+}
+
+  /* 页面布局容器（外层包裹 / 白色卡片） */
+.wrap{max-width:860px;margin:0 auto;padding:48px 20px 96px}
+.card{background: #fff ;border-radius:20px;padding:52px 60px 64px;box-shadow:0 12px 44px rgba(29,84,68,.12)}
+
+  /* 响应式适配（手机端，宽度 ≤700px） */
+@media (max-width:700px){
+  .card{padding:30px 22px 40px;border-radius:14px}
+  .wrap{padding:24px 12px 64px}
+}
+
+  /* 标题体系（h1~h4 的字号 / 间距 / 颜色） */
+h1{font-size:36px;line-height:1.35;margin:0 0 8px;color:var(--green-dark);letter-spacing:.5px}
+h2{
+  font-size:25px;line-height:1.4;margin:52px 0 16px;padding:6px 0 6px 16px;
+  border-left:6px solid var(--green);border-radius:3px;color:var(--green-dark);
+}
+h2:first-of-type{margin-top:36px}
+h3{font-size:20px;line-height:1.45;margin:36px 0 12px;color:var(--amber)}
+h4{font-size:17px;line-height:1.45;margin:28px 0 10px;color: #44576b }
+
+  /* 所有标题加粗，层次立刻分明 */
+  .markdown h1,
+  .markdown h2,
+  .markdown h3,
+  .markdown h4,
+  .markdown h5,
+  .markdown h6 {
+    font-weight: 700;
+    line-height: 1.4;
+  }
+
+  /* 适当拉开各级标题的大小差距（hugo-book 默认 h4/h5 偏小） */
+  .markdown h1 { font-size: 2.1rem; }
+  .markdown h2 { font-size: 1.65rem; }
+  .markdown h3 { font-size: 1.35rem; }
+  .markdown h4 { font-size: 1.15rem; }
+  .markdown h5 { font-size: 1.05rem; }
+  .markdown h6 { font-size: 0.95rem; }
+
+  /* 可选：给 h2 加条分隔线，更像文档站（不想要就删掉） */
+  .markdown h2 {
+    border-bottom: 1px solid #d8d8d8;
+    padding-bottom: 0.3em;
+  }
+
+  /* 正文与强调（段落 / 加粗文字）*/
+p{margin:14px 0}
+strong{color: #1d5444 ;font-weight:700}
+
+  /* 列表（无序/有序列表及符号颜色）*/
+ul,ol{margin:12px 0;padding-left:1.6em}
+li{margin:7px 0}
+ul li::marker{color:var(--green)}
+ol li::marker{color:var(--amber);font-weight:600}
+
+  /* 引用块（blockquote，即 Markdown 的 ">"*/
+blockquote{
+  margin:20px 0;padding:14px 20px;
+  background:var(--bq-bg);border-left:4px solid var(--green);
+  border-radius:0 12px 12px 0;color: #2f4a3c ;font-size:15.5px;
+}
+
+  /* 分隔线与行内代码（--- 和 `代码`）*/
+hr{border:none;height:1px;margin:46px 0;background:linear-gradient(90deg,transparent,rgba(47,122,92,.35),transparent)}
+code{background: #eef1f4 ;border-radius:6px;padding:2px 7px;font-size:.88em;font-family:Consolas,Menlo,monospace}
+
+  /* 目录导航（页面顶部的 📑 目录框*/
+toc{background:var(--toc-bg);border:1px solid var(--line);border-radius:14px;padding:20px 24px;margin:0 0 30px}
+.toc h3{margin:0 0 10px;font-size:16px;color:var(--green-dark)}
+.toc ul{list-style:none;margin:0;padding:0}
+.toc li{margin:7px 0}
+.toc a{color:var(--green-dark);text-decoration:none;border-bottom:1px dashed #b7cdc0 ;padding-bottom:1px}
+.toc a:hover{color:var(--amber);border-bottom-color:var(--amber)}
+.toc .toc-l3{padding-left:22px;font-size:14.5px;color: #44576b }
+.toc .toc-l3 a{color: #44576b }
+
+
+/* 4.头像与主页设置*/
+.profile { text-align: center; padding: 2.5rem 0 1.5rem; }
+.profile-avatar {
+  width: 120px; height: 120px;
+  border-radius: 50%;
+  object-fit: cover;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, .15);
+}
+.profile-name { margin: .8rem 0 .3rem; }
+.profile-bio { color: var(--color-text); opacity: .75; }
+.profile-links { margin-top: .8rem; }
+.profile-links a { margin: 0 .4rem; }
+
+/* 名字：用主题的蓝色强调色 */
+.profile-name { color: var(--color-accent-note); }
+
+/* 简介：灰色次要文字 */
+.profile-bio { color: var(--gray-500); }
+
+/* 链接：默认主题链接色，去掉下划线 */
+.profile-links a { color: var(--color-link); text-decoration: none; }
+.profile-links a:hover { color: var(--color-accent-warning); }
+
+/* 文字阴影：想加也可以 */
+.profile-name { text-shadow: 1px 1px 2px rgba(0, 0, 0, .2); }
+
+</style>
+
+
+

@@ -1,0 +1,21 @@
+baseURL = "https://790192412-ux.github.io/"
+locale = 'zh-cn'
+title = '梦生的博客'
+
+### 主题选择
+theme = "book"
+
+### 参数设置
+[params]
+  BookTheme = "auto"
+  BookSearch = true
+  BookSection = "docs"
+
+### 标题语法
+[markup.tableOfContents]
+startLevel = 2
+endLevel = 5
+
+### 换行设置
+[markup.goldmark.renderer]
+hardWraps = true

@@ -1,0 +1,13 @@
+{{ define "main" }}
+<div class="profile">
+  <img class="profile-avatar" src="/images/avatar.png" alt="头像">
+  <h1 class="profile-name">梦生</h1>
+  <p class="profile-bio">记录知识、游戏与思考的地方。</p>
+  <p class="profile-links">
+    <a href="https://github.com/你的账号">GitHub</a>
+    · <a href="/docs/">文章索引</a>
+  </p>
+</div>
+<hr>
+{{ with .Site.GetPage "/docs" }}{{ .Content }}{{ end }}
+{{ end }}
