@@ -1,0 +1,224 @@
+---
+weight: 2
+---
+## 静态博客搭建：Hugo建站到一键推送
+
+四月份前后，就有过用 Hugo 搭静态博客的想法，当时找教程看得一头雾水，就搁置了。八月重新捡起来：这中间对相关概念有了些基础了解，AI 工具也比之前好用了不少。这次从框架筛选一路走到上线，顺手把 Obsidian 知识库的备份也解决了，记录一下整个过程。
+
+### 📊 信息过载下的框架筛选
+
+重新开始后第一件事还是找教程。B 站一搜，出来的全是各种框架的教学，信息量一下子超载。于是先停下来，把主流静态博客框架整体过了一遍，再决定怎么筛。
+
+##### 框架清单
+
+梳理后得到十框架对照表（按中文教程量排序）：
+
+| 框架 | 语言/运行时 | 定位 | 备注 |
+|---|---|---|---|
+| Hexo | Node.js | 博客 | 中文教程最多，主题成熟 |
+| Hugo | Go（单二进制） | 博客 | 免环境、构建最快 |
+| Jekyll | Ruby | 博客 | GitHub Pages 原生支持，Windows 装 Ruby 是痛点 |
+| VitePress | Node.js（Vue） | 文档站 | 官方有博客模板 |
+| Astro | Node.js | 内容型网站 | 现代前端，自由度太高 |
+| Docusaurus | Node.js（React） | 文档站 | Meta 出品，体量重 |
+| Next.js | Node.js（React） | 全栈框架 | 写博客属过度设计 |
+| Gatsby | Node.js（React） | 静态站 | 社区热度已降 |
+| MkDocs | Python | 文档站 | 无原生博客功能 |
+| Zola | Rust（单二进制） | 博客/文档 | 主题生态小，中文教程极少 |
+
+##### 排除法与最终选择
+
+筛选走排除法：
+
+1. 先确认需求是个人博客还是文档站——纯博客只在 Hugo、Hexo、Astro 里选；
+2. 再看环境底线——不想装 Node 或 Ruby 的话，只有 Hugo 和 Zola 满足，这是 Hugo 最大的差异化优势；
+3. 最后看折腾意愿和部署方式——想开箱即用选 Hexo 或 Hugo，想深入定制选 Astro 或 VitePress。
+
+最终把范围缩到 Hugo vs Hexo 两个。既然已经在研究 Hugo，就继续深入，学不动再退回 Hexo——Markdown、Front Matter、主题配置、Git 部署这些底层概念各框架八成通用，换框架成本约一个周末。
+
+##### 两个前置问题的澄清
+
+动手前先想清楚了两件事。一是为什么不直接用 B 站、QQ 空间这类现成平台：平台是"租的摊位"，博客是"自己的地"，差别在内容控制权、存续风险、搜索积累和审核四条。最优解是两者都要——博客做长文沉淀，平台当分发渠道。
+
+二是 Python 项目文档不必急着上 MkDocs，README 起步，文档大了再说。
+
+还有一个最主要的原因是——————样式太丑。
+
+### 🤖 前置：AI 协助与命令行
+
+整个过程是在 AI 的协助下推进的。所用工具和思路与之前的《IndexTTS 配音+自动字幕部署》完全一致，那篇里写过的不再展开，这里只补两点。
+
+##### AI 工具的作用
+
+对话模型用的 DeepSeek API，前端是 Chatbox，开了联网搜索和代码执行。联网搜索用来查资料、核实官方文档和主题源码；代码执行是关键——拿不准的机制，先在沙盒里装同版本 Hugo 复现一遍，确认了再动手改，不凭印象猜。
+
+配置上延续了`专属助手`的做法：把项目背景、需求写进系统提示词，后续对话不用重复交代。从选型到排错到脚本编写，都是在这个工作方式下完成的。
+
+##### 关于命令行
+
+Hugo 这类自部署工具没有图形界面，只能靠命令行——安装、建站、推送、发布全是命令，跟平时用惯的鼠标点击、拖拽不太一样。这一点需要先接受：命令行是必经之路。不会的、不懂的问 AI 就行，AI 把技术门槛从"自己会写代码"降到了"把问题描述清楚"。
+
+### 🎯 Hugo 与 Book 主题的选定
+
+##### 框架层面
+
+选 Hugo 的理由：单文件程序，不装 Node 不装 Ruby，下载即用；上千篇文章几秒出站；分类、多语言等博客刚需内置。缺点是 Go 模板语法学习曲线比 Hexo 陡，中文资料少但够用。
+
+##### 主题与评论系统
+
+主题选了 hugo-book（[alex-shpak/hugo-book](https://github.com/alex-shpak/hugo-book)），书/文档风格，左侧目录树、右侧章节导航，官方宣称零初始配置，但要求 Hugo v0.158 及以上。
+
+评论系统也对比过：Giscus（基于 GitHub Discussions，零部署）、Waline 和 Twikoo（要部署轻量服务）、Disqus（国内被墙）、Valine（有 XSS 漏洞史）。最后决定暂不接入——纯个人文章存放，以后想要随时能加，静态站加评论不用迁移任何东西。
+
+### 🛠️ 从安装到本地跑通
+
+##### 前置环境准备
+
+部署前先确认环境，分两部分：Git 和 Hugo。这次因为之前装过，直接用了；若从零开始：
+
+1. 安装 Git：[官网](https://git-scm.com/) 下载 Windows 版安装包，默认选项一路下一步，装完 `git --version` 验证；
+2. 安装 Hugo：`winget install Hugo.Hugo.Extended`（认准 extended 版，部分主题需要），或去 [GitHub Releases](https://github.com/gohugoio/hugo/releases) 手动下载解压加入 PATH，装完 `hugo version` 验证。
+
+##### 站点初始化与主题安装
+
+安装完成后，建站和装主题一共三条命令，拆开说：
+
+```
+hugo new site myblog
+```
+
+`myblog` 就是博客文件夹的名字，可以自定义——建议别用中文，避免路径相关的 bug；我实际用的名称是 `Lt-Dr-website`。这条命令几秒钟就能建好框架，生成 `hugo.toml`、`content`、`themes` 等基础目录。建好后确认命令行停在博客根目录——这是下一步 `git init` 的前提，若没有自动进入就手动 `cd` 进去再继续。
+
+```
+git init
+```
+
+把当前目录初始化为 git 仓库。后面的提交、推送、GitHub Actions 自动部署，全都依赖这一步。
+
+```
+git submodule add https://github.com/alex-shpak/hugo-book themes/book
+```
+
+安装主题到 `themes/book`。我选的是 Book 主题，仓库地址如上，官方示例站是 [book.alxs.dev](https://book.alxs.dev)，左侧目录树、右侧章节导航的样子可以先去那里感受一下。想换别的主题，就去 Hugo 官方主题站 [themes.gohugo.io](https://themes.gohugo.io) 挑一个，把这条命令里的链接替换掉即可；更细的配置拿不准，直接问 AI 帮忙捋——前面说过整个流程都有 AI 辅助，我自己也是这么一步步做出来的。
+
+##### 目录结构与板块搭建
+
+hugo-book 的内容组织是`书`式：左侧目录对应 `content/docs/` 下的文件夹树，每个分组文件夹里必须有一个 `_index.md` 决定侧边栏显示。按知识分享、游戏攻略、综合杂谈、资源分享四个板块建了文件夹，每个板块一个 `_index.md`，用 `weight` 控制排序，`bookCollapseSection: true` 做成可折叠分组。
+
+##### 写作与粘贴的适配
+
+日常写作在 Obsidian 里完成，粘进博客时有几类语法要改：双链、图片嵌入、高亮、行内标签、特殊引用块，都是 Obsidian 的 Markdown 超集语法，Hugo 不认。Front Matter 基本兼容，日期不写也能用文件修改时间。
+
+另外在 `hugo.toml` 加了 `[markup.goldmark.renderer] hardWraps = true`，让单个回车按换行渲染，与 Obsidian 显示一致——Hugo 默认按 CommonMark 规范把段内换行当软换行、渲染成空格，这个改动是实测验证过的。
+
+### 🐛 问题排查记录
+
+排查过程借助 AI 反复核对，多数问题都是先复现、再定位。
+
+##### 空目录报错与首页空白
+
+第一个报错是 `Section 'docs' not found`。原因是 `content/docs/` 是空的，里面没有 `_index.md`，Hugo 不认为它是合法 section。顺带发现 Git 根本不跟踪空文件夹，空目录推送后克隆会直接消失。
+
+补上 `_index.md` 后首页又只剩一个搜索框——因为 `_index.md` 只写了 Front Matter 没有正文，加上正文后正常。
+
+##### 标题样式与目录深度
+
+右侧目录只收三级标题，而 Obsidian 里习惯写到五级。Hugo 默认 TOC 只收 h2~h3，在 `hugo.toml` 加 `[markup.tableOfContents] startLevel = 2 endLevel = 5` 解决。
+
+另一个问题是标题对比不明显。查主题源码发现标题默认 `font-weight: inherit`，完全不加粗，只靠字号区分，而 h5 与正文同号。主题留了官方样式注入点 `layouts/_partials/docs/inject/head.html`（主题里是空文件），往里面写 CSS 给标题加粗、拉开字号差，选择器限定在 `.markdown` 正文区，不影响侧边栏。
+
+##### emoji 链接与 URL 清洗
+
+主页按板块写跳转链接，手写的带 emoji 链接点了 404，侧边栏却正常。沙盒复现后确认：Hugo 生成 URL 时会自动清洗文件夹名里的 emoji，手写链接带 emoji 就对不上；数字前缀同样被清洗。
+
+结论是文件夹名只影响 URL，显示标题看 `_index.md` 的 title，侧边栏排序看 weight；站内链接一律用根路径。
+
+##### 主页改造
+
+新版主题没有首页模板，首页内容完全来自 `content/_index.md`（沙盒实测确认），一直没建所以空白。用自定义 `layouts/index.html` 做了个人卡片式主页：头像、名字、简介、链接，配合注入的 CSS，颜色用主题自带的变量，深色模式下也能正常显示。
+
+### 🚀 部署与上线
+
+##### 仓库命名与推送
+
+[GitHub Pages](https://pages.github.com/) 的用户站要求仓库名等于 `用户名.github.io`，这决定站点在根路径，手写根路径链接全部生效；项目仓库会带子路径导致 404。
+
+期间踩了两个坑。一是仓库名起错（不匹配用户名），改名解决；二是 push 一直失败，原因是 GitHub 已不支持密码登录，生成 [Personal Access Token](https://github.com/settings/tokens)（勾选 repo 和 workflow 权限）后才推上去。
+
+##### Actions 与两个坑
+
+部署走 GitHub Actions：Settings → Pages 来源选 GitHub Actions，工作流文件放 `.github/workflows/deploy.yml`，每次 push 自动构建发布。两个坑：
+
+1. Actions 页面一直显示 `Suggested for this repository`，说明工作流文件根本没进仓库，在网页端补建解决；
+2. 报错`所有 actions 必须锁定完整 SHA`，仓库默认开了这个安全策略，直接在设置里关掉，或用查出的完整 SHA 替换 `@v4` 这类版本号写法。
+
+##### 网页端编辑引发的分叉
+
+一次推送失败后去网页端改了文件，埋下分叉的雷：远程多了一个网页编辑产生的提交，本地也有自己的提交，两边历史对不上，push 被拒。用 `git pull --rebase` 合并，遇到`假冲突`——两个提交在同一个位置加了一模一样的链接，`git checkout --theirs` 保留本地版后 `git rebase --continue`，在 vim 里 `:wq` 退出，推送成功。此后定下规矩：网页端只读，所有修改在本地做。
+
+##### 代理与网络
+
+push 时报 `Connection was reset`，浏览器能上 GitHub 但 git 连不上——git 命令行默认不认系统代理。用 `reg query` 查到代理端口后配置：
+
+```
+git config --global http.https://github.com/.proxy http://127.0.0.1:21081
+```
+
+只让 github.com 走代理，比开 TUN 模式省流量，网盘下载等流量不受影响。
+
+### 💾 Obsidian 库的 git 备份
+
+博客上线后，顺手把 Obsidian 知识库的备份也安排上：低频但有用的库用 git 备份到 GitHub 私有仓库，日常库继续走 Obsidian 官方同步。commit 完全离线、只有 push 需要网络，所以平时本地随便提交，挂 VPN 时集中推送。
+
+##### 一库一仓库与 .gitignore
+
+方案是`一库一仓库`：Obsidian Git 插件按 vault 工作，一个仓库装多个库会互相干扰。每个库一份通用 `.gitignore`（排除 workspace.json、.trash、Thumbs.db 等），复制即用。英语积累库有 2400 多个小文件，纯文本对 git 毫无压力，首次推送前加了 `git config core.longpaths true` 预防路径过长。
+
+##### 空文件夹与占位文件
+
+推上去后发现空文件夹没上传——git 只跟踪文件不跟踪文件夹。给每个空文件夹放一个 `.gitkeep` 占位文件（模板库则写了说明文档，一箭双雕），重新提交推送解决。
+
+##### 一键推送与换电脑
+
+把`提交+推送`封装成 `.bat` 文件，双击即用：`cd /d "%~dp0"` 自动定位目录、`git add -A`、`git commit -m "更新"`、`git push`，`pause` 让窗口停住显示结果。这套流程经过完整测试一轮确认可用后才定型。
+
+换电脑的恢复流程也提前梳理好：装 git → 配置身份 → clone → Obsidian 打开文件夹，插件和设置随 `.obsidian` 一起带过去。
+
+### 📌 立下的规矩
+
+##### git 日常规则
+
+1. 网页端只读，绝不编辑，所有修改在本地做
+2. `nothing to commit` 是正常提示不是报错，真正要关心的是 push 是否成功
+3. push 失败基本都是网络问题，挂 VPN 重试，别去网页端绕路
+4. git 状态就四种：`up to date`（无需操作）、`ahead`（push）、`behind`（pull）、`diverged`（先 pull --rebase 再 push）
+5. `.gitignore` 只管未被跟踪的文件，已在册的要 `git rm --cached` 除名——博客的 public 和 .hugo_build.lock 就是这么清理的
+
+##### 内容红线
+
+`功能网站收集`这类文档里有 Pornhub、梯子、盗版资源站链接，查了 GitHub 的可接受使用政策后决定不发布——公开博客只放敢对任何人负责的内容，敏感链接留在 Obsidian 本地。色情小说的念头也打消了，私人内容走本地和 Kindle，零风险。发布前的标准是：粘贴进 content 目录的那一刻就等于公开。
+
+### 🧠 对 git 与静态站的新理解
+
+##### git 的账本模型
+
+对 git 最直观的理解是`两边各记各的账本`：本地和远程各有一条提交链，push 是把本地记录补到远程链末尾，只有本地完整包含远程时才允许追加；两边各自新增提交就分叉，需要先合并再推。这个模型解释了此前所有报错的来龙去脉。
+
+##### 静态站与 CDN
+
+上线后发现 github.io 比 GitHub 主站还流畅，原因在于静态站加 CDN：一个页面几十 KB，Fastly 边缘节点就近缓存，服务器零计算。几百篇文章对加载速度无感，图片才是重量级选手，一张手机原图顶几百篇文章的体量，优化靠压缩、转格式和懒加载。
+
+##### 封装与自动化
+
+`.bat` 的本质是把固定动作打包成可双击的入口；Hugo 的 public 目录是源码的复制加工品，随时可以重新生成，所以不该进仓库；GitHub Actions 让`推送即发布`成为常态。整条链路最终沉淀为：本地改 → 双击 bat → 等两分钟 → 网站更新。
+
+### 🏁 几条技术经验
+
+1. 结论先查证、问题先复现，别凭印象改配置——一次差点把对的 locale 改成废弃的 languageCode
+2. `网页端只读 + 本地 commit + 挂 VPN 时 push`能避开 git 绝大多数坑
+3. 内容红线要在上线前立好，公开意味着对所有人负责
+4. 轻量化加 CDN 是静态站的核心优势，图片才是真正的大头
+
+整条链路从框架筛选到上线跑通，全程没有丢失任何内容，这套流程已经可以长期使用了。
+
+>🌈 ——by小梦生
