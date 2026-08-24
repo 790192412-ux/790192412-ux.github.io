@@ -71,12 +71,24 @@ li{margin:7px 0}
 ul li::marker{color:var(--green)}
 ol li::marker{color:var(--amber);font-weight:600}
 
-  /* 引用块（blockquote，即 Markdown 的 ">"*/
+  /* 引用块（blockquote，即 Markdown 的 ">"）*/
+  /* 背景改为半透明：rgba 最后一位 = 透明度（0~1），值越小越透明 */
 blockquote{
   margin:20px 0;padding:14px 20px;
-  background:var(--bq-bg);border-left:4px solid var(--green);
+  background:rgba(241,247,243,.55);border-left:4px solid var(--green);
   border-radius:0 12px 12px 0;color: #2f4a3c ;font-size:15.5px;
 }
+
+  /* 表格（Markdown 表格：半透明背景 + 表头色块 + 斑马纹）*/
+table{
+  width:100%;border-collapse:collapse;margin:20px 0;
+  background:rgba(241,247,243,.5);border:1px solid var(--line);
+  border-radius:12px;overflow:hidden;
+}
+th,td{padding:10px 14px;border-bottom:1px solid var(--line);text-align:left}
+th{background:rgba(47,122,92,.14);color:var(--green-dark);font-weight:700}
+tr:nth-child(even) td{background:rgba(255,255,255,.4)}
+tr:last-child td{border-bottom:none}
 
   /* 分隔线与行内代码（--- 和 `代码`）*/
 hr{border:none;height:1px;margin:46px 0;background:linear-gradient(90deg,transparent,rgba(47,122,92,.35),transparent)}
@@ -120,6 +132,3 @@ toc{background:var(--toc-bg);border:1px solid var(--line);border-radius:14px;pad
 .profile-name { text-shadow: 1px 1px 2px rgba(0, 0, 0, .2); }
 
 </style>
-
-
-
