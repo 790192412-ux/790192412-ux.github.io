@@ -2,7 +2,7 @@
   /* 0.全局配色变量（改这里 = 全站换色） */
 :root{
   --green: #2f7a5c ; --green-dark: #1d5444 ; --amber: #b3541e ;
-  --ink: #2b2f36 ; --line: #e3e8ec ; --bq-bg: #f1f7f3 ; --toc-bg: #f7f9f8 ;
+  --ink: #2b2f36 ; --line: #e3e8ec ; --bq-bg: rgba(47,122,92,.7) ; --toc-bg: #f7f9f8 ;
 }
 
   /* 全局基础（盒模型 / 页面字体 / 背景 */
@@ -71,12 +71,31 @@ li{margin:7px 0}
 ul li::marker{color:var(--green)}
 ol li::marker{color:var(--amber);font-weight:600}
 
-  /* 引用块（blockquote，即 Markdown 的 ">"*/
-blockquote{
-  margin:20px 0;padding:14px 20px;
-  background:var(--bq-bg);border-left:4px solid var(--green);
-  border-radius:0 12px 12px 0;color: #2f4a3c ;font-size:15.5px;
+  /* 引用块（blockquote，即 Markdown 的 ">"*/  /* 背景：极淡半透明绿（调深浅改这个 rgba 的第三位：.05 更淡 / .12 更明显） */
+  /* 左边 4px 绿色强调条，左上/左下 3px 圆角——和二级标题 h2 的左边条同风格；无边框无阴影 */
+  /* padding/margin 对齐旧版实际渲染值（旧版裸 blockquote 被主题 .markdown blockquote 压住，实际用的是 8px 16px 8px 12px + 16px 0，所以色块短小） */
+  /* 选择器说明：hugo-book 主题的 .markdown 规则用了 CSS 原生嵌套，会把 .book-hint 解析成 .markdown .book-hint（特异性 0,2,0），所以这里用 .markdown blockquote.book-hint（0,2,1）才能压住 */
+.markdown blockquote.book-hint,
+.markdown blockquote{
+  margin:16px 0;padding:8px 16px 8px 12px;
+  background:rgba(47,122,92,.08);
+  border:none;border-left:4px solid var(--green);
+  border-radius:3px 12px 12px 3px;
+  color: #2f4a3c ;font-size:15.5px;
 }
+
+  /* 表格（Markdown 表格：半透明绿背景 + 表头 + 斑马纹 + 阴影） */
+.markdown table{
+  width:100%;border-collapse:collapse;margin:20px 0;
+  background:rgba(47,122,92,.07);
+  border:1px solid #cfe3d8;border-radius:12px;overflow:hidden;
+  box-shadow:0 4px 16px rgba(0,0,0,.08);
+}
+.markdown table th,
+.markdown table td{padding:10px 14px;text-align:left;border-bottom:1px solid #d9e8e0}
+.markdown table th{background:rgba(47,122,92,.15);color:var(--green-dark);font-weight:700}
+.markdown table tr:nth-child(even) td{background:rgba(255,255,255,.4)}
+.markdown table tr:last-child td{border-bottom:none}
 
   /* 分隔线与行内代码（--- 和 `代码`）*/
 hr{border:none;height:1px;margin:46px 0;background:linear-gradient(90deg,transparent,rgba(47,122,92,.35),transparent)}
@@ -120,6 +139,3 @@ toc{background:var(--toc-bg);border:1px solid var(--line);border-radius:14px;pad
 .profile-name { text-shadow: 1px 1px 2px rgba(0, 0, 0, .2); }
 
 </style>
-
-
-
