@@ -1,4 +1,5 @@
 ---
+title: "IndexTTS配音+自动字幕部署"
 weight: 1
 ---
 
