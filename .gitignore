@@ -12,3 +12,7 @@ Thumbs.db
 *.log
 .idea/
 .vscode/
+
+# ===== Obsidian配置文件，方便本地编辑 =====
+.obsidian/
+.trash/
