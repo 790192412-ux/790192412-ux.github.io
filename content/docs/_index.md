@@ -1,4 +1,4 @@
-﻿---
+---
 title: "文档"
 weight: 1
 bookCollapseSection: true
@@ -6,6 +6,10 @@ bookCollapseSection: true
 
 
 # 欢迎来到我的博客
+
+>本博客部分文章含"灵视"内容：
+>看完后，你对这个世界的一些看法可能回不到从前。
+>作者已尽到提示义务。
 
 按板块浏览：
 
