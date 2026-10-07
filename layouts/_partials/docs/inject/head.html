@@ -61,6 +61,7 @@ h4{font-size:17px;line-height:1.45;margin:28px 0 10px;color: #44576b }
     padding-bottom: 0.3em;
   }
 
+
   /* 正文与强调（段落 / 加粗文字）*/
 p{margin:14px 0}
 strong{color: #1d5444 ;font-weight:700}
@@ -137,5 +138,68 @@ toc{background:var(--toc-bg);border:1px solid var(--line);border-radius:14px;pad
 
 /* 文字阴影：想加也可以 */
 .profile-name { text-shadow: 1px 1px 2px rgba(0, 0, 0, .2); }
+
+
+/* ============================================================
+   5. 侧栏导航紧凑化（左侧文章列表 + 右侧页内目录）
+   ------------------------------------------------------------
+   为什么原来行距特别大：本文件顶部把 body 的 line-height 设成了 1.9，
+   又写了全局的 li{margin:7px 0}——这两条会「漏」进左侧 menu 和右侧
+   TOC 的 <nav><ul><li>（主题自己没有给 nav 设 line-height/margin），
+   再叠加主题自带的 nav ul a{padding:.5em 0}，于是每个条目的垂直
+   空白 = 7px(li上半) + 7px(a上内边距) + 7px(a下内边距) + 7px(li下半)
+   ≈ 28px，加上 1.9 倍行高就非常松。
+   下面用更高优先级的 .book-menu / .book-toc 选择器只给两个侧栏收口，
+   正文不受影响。想再紧/再松，只改这几行的数字即可。
+   ============================================================ */
+
+/* 两个独立的旋钮，别混用：
+   - line-height  → 只管「同一条标题自己折行」时，行与行之间
+   - a 的 padding → 管「条目与条目之间」（因为 li 的 margin 已被上面清零）
+   所以想「折行紧 + 条目之间仍然松」，就是 line-height 调小、padding 调大。
+   line-height: 1.8 正是长标题折行显得空的元凶。 */
+
+/* —— 左侧菜单（文章题目列表） —— */
+.book-menu nav ul       { line-height: 1.35; }  /* 折行行距：1.8 → 1.35（收紧） */
+.book-menu nav ul li    { margin: 0; }          /* 干掉漏进来的全局 li 外边距 */
+.book-menu nav ul a     { padding: 0.42em 0; }  /* 条目间距：0.25em → 0.42em（补回来） */
+.book-menu nav ul ul    { padding-inline-start: 1.15em; }  /* 子级缩进收窄 */
+
+/* —— 右侧页内目录（TOC）—— 目录条目同样会折行，一并处理 —— */
+.book-toc nav ul        { line-height: 1.35; }
+.book-toc nav ul li     { margin: 0; }
+.book-toc nav ul a      { padding: 0.3em 0; }
+.book-toc nav ul ul     { padding-inline-start: 1.15em; }
+
+/* 窄屏（手机）抽屉里的菜单同样生效，无需另外处理 */
+
+
+/* ============================================================
+   6. 内嵌小游戏（由 shortcodes/game.html 输出这段结构）
+   ------------------------------------------------------------
+   游戏本体是 static/games/ 下的独立页面，用 iframe 嵌进来，
+   这样它们自己的样式不会和本文件的全局规则（*、h1~h4、li、table…）
+   互相打架。
+   想改「外框」外观 → 改这一节；想改玩法 → 改 static/games/ 里的文件。
+   ============================================================ */
+.game-embed{
+  --game-h: 640px;
+  margin:26px 0;background:#fff;border:1px solid var(--line);border-radius:14px;
+  overflow:hidden;box-shadow:0 6px 22px rgba(29,84,68,.09);
+}
+.game-embed .game-bar{
+  display:flex;align-items:center;justify-content:space-between;gap:12px;
+  padding:8px 14px;font-size:13.5px;
+  background:rgba(47,122,92,.06);border-bottom:1px solid var(--line);
+}
+.game-embed .game-bar span{font-weight:700;color:var(--green-dark)}
+.game-embed .game-bar a{color:var(--green-dark);text-decoration:none;white-space:nowrap}
+.game-embed .game-bar a:hover{color:var(--amber)}
+.game-embed iframe{display:block;width:100%;height:var(--game-h);border:0;background:#f7f9f8}
+
+@media (max-width:700px){
+  .game-embed iframe{height:560px}
+  .game-embed .game-bar{font-size:12.5px}
+}
 
 </style>

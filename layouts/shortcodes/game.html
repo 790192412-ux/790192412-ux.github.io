@@ -1,0 +1,11 @@
+{{- /* 用法：{{< game src="games/snake/" title="🐍 贪吃蛇" height="640" >}} */ -}}
+{{- $src   := .Get "src" -}}
+{{- $title := default "小游戏" (.Get "title") -}}
+{{- $h     := .Get "height" -}}
+<div class="game-embed"{{ with $h }} style="--game-h: {{ . }}px"{{ end }}>
+  <div class="game-bar">
+    <span>{{ $title }}</span>
+    <a href="{{ $src | relURL }}" target="_blank" rel="noopener">↗ 全屏打开</a>
+  </div>
+  <iframe src="{{ $src | relURL }}" loading="lazy" allowfullscreen title="{{ $title }}"></iframe>
+</div>
